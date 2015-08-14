@@ -24,6 +24,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        clientDao = new ClientDAO(this);
+
         loginIn = (EditText) findViewById(R.id.login);
         passIn = (EditText) findViewById(R.id.pass);
 
@@ -58,7 +60,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        clientDao = new ClientDAO(this);
+
 
         if (v==logged){
             Log.d("view : " , "logged");
@@ -66,14 +68,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             String pass = passIn.getText().toString();
             Log.d("login :  ", login);
             Log.d("login :  ", pass);
-
-            if(clientDao.checkPassword(login, pass)){
-                Log.d("check", "ok");
-                Intent compte = new Intent(LoginActivity.this, Compte.class);
-                startActivity(compte);
-            } else{
-                loginIn.clearComposingText();
+            boolean passOk = clientDao.checkPassword(login, pass);
+            if (!login.isEmpty() || !pass.isEmpty()){
+                if(passOk ){
+                    Log.d("check", "ok");
+                    Intent compte = new Intent(LoginActivity.this, Compte.class);
+                    startActivity(compte);
+                } else{
+                    loginIn.clearComposingText();
+                    passIn.clearComposingText();
+                }
             }
+            else {
+                loginIn.clearComposingText();
+                passIn.clearComposingText();
+            }
+
 
         } else if (v==canceled){
             Intent main = new Intent(LoginActivity.this, MainActivity.class);
