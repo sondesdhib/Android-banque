@@ -17,8 +17,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private EditText loginIn, passIn;
     private Button logged, canceled;
+    private String login, pass;
 
-   private  DatabaseHandler db;
+    private DatabaseHandler db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,33 +64,30 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
 
-//TODO a revoir probléme de connection
-        if (v==logged){
 
-            String login = loginIn.getText().toString();
-            String pass = passIn.getText().toString();
+        if (v == logged) {
 
-            Log.d("login   ", login);
-            Log.d("pass  ", pass);
+            login = loginIn.getText().toString();
+            pass = passIn.getText().toString();
 
-            boolean passOk = db.checkPassword(login, pass);
+            //boolean passOk = db.checkPassword(login, pass);
 
-            if (!login.isEmpty() && !pass.isEmpty() && db.checkPassword(login, pass)){
+            //if (login.isEmpty() && pass.isEmpty() &&
+            if (db.checkPassword(login, pass)) {
 
-                    Log.d("pass", "OK");
-                    Intent compte = new Intent(LoginActivity.this, Compte.class);
-                    startActivity(compte);
-            }else {
+
+                Intent compte = new Intent(LoginActivity.this, Compte.class);
+                startActivity(compte);
+            } else {
                 loginIn.setText("");
                 passIn.setText("");
             }
 
 
-        } else if (v==canceled){
+        } else if (v == canceled) {
             Intent main = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(main);
         }
-
 
 
     }
@@ -104,8 +102,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         db.close();
         super.onPause();
     }
+
     @Override
-    protected void onResume(){
+    protected void onResume() {
         db.getWritableDatabase();
         super.onResume();
     }

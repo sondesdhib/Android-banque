@@ -15,7 +15,6 @@ import model.Client;
 public class DatabaseHandler extends SQLiteOpenHelper {
 
 
-
     private static String DB_PATH = "/data/data/com.example.florian.android_banque/databases/";
 
     private static final int VERSION = 1;
@@ -30,15 +29,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String CLIENT_PASSWORD = "passClient";
 
 
-
     public static final String TABLE_CLIENT_CREATE = "CREATE TABLE "
             + TABLE_CLIENT_NAME + " (" +
             CLIENT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            CLIENT_NOM+ " TEXT, " +
+            CLIENT_NOM + " TEXT, " +
             CLIENT_PRENOM + " TEXT, " +
             CLIENT_LOGIN + " TEXT, " +
             CLIENT_PASSWORD + " TEXT " +
-              ")";
+            ")";
 
 
     public static final String CLIENT_TABLE_DROP = "DROP TABLE IF EXISTS " + TABLE_CLIENT_NAME + ";";
@@ -56,23 +54,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 
-
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.d("on", "upgrade");
+
         db.execSQL(CLIENT_TABLE_DROP);
         onCreate(db);
     }
 
 
-
     public void ajouter(Client c) {
 
-        if(clientExist(c)){
+        if (clientExist(c)) {
             modifier(c);
-        }
-
-        else {
+        } else {
 
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues value = new ContentValues();
@@ -86,10 +80,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
 
-
     }
 
-    public void supprimer (long id) {
+    public void supprimer(long id) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -98,7 +91,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     }
 
-    public void modifier (Client c) {
+    public void modifier(Client c) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -112,7 +105,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     }
 
-    public Client selectionner (long id) {
+    public Client selectionner(long id) {
 
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -123,7 +116,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 CLIENT_ID + " = ?", new String[]{String.valueOf(id)}
                 , null, null, null, null);
 
-        if (cursor!=null){
+        if (cursor != null) {
             cursor.moveToFirst();
             client.setIdClient(cursor.getInt(cursor.getColumnIndex(CLIENT_ID)));
             client.setNom(cursor.getString(cursor.getColumnIndex(CLIENT_NOM)));
@@ -132,44 +125,43 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return client;
 
     }
-    public boolean checkPassword(String login, String passwordIn){
+
+    public boolean checkPassword(String login, String passwordIn) {
 
         SQLiteDatabase db = this.getReadableDatabase();
 
-        if (login!=null && passwordIn!=null){
-            String pass;
-            String [] tableColumns = new String[] {CLIENT_LOGIN, CLIENT_PASSWORD};
-            Cursor cursor = db.query(TABLE_CLIENT_NAME, tableColumns, CLIENT_LOGIN + " = ?", new String[]{login},null,null,null,null);
 
-            if (cursor.isFirst()){
-                cursor.moveToFirst();
-                pass= cursor.getString(cursor.getColumnIndex(CLIENT_PASSWORD));
+        String pass = new String();
+        String[] tableColumns = new String[]{CLIENT_LOGIN, CLIENT_PASSWORD};
+        Cursor cursor = db.query(TABLE_CLIENT_NAME, tableColumns, CLIENT_LOGIN + " = ?", new String[]{login}, null, null, null, null);
 
-                if (pass == passwordIn){
-                    return true;
-                }else{
-                    return false;
-                }
-            }
-            else{
+        if (cursor.moveToFirst()) {
+
+
+            pass = cursor.getString(cursor.getColumnIndex(CLIENT_PASSWORD));
+
+
+            if (pass.equals(passwordIn)) {
+                return true;
+            } else {
                 return false;
             }
-
         } else {
             return false;
         }
+
     }
 
-    public List<Client> getALLClient(){
+    public List<Client> getALLClient() {
 
         SQLiteDatabase db = this.getReadableDatabase();
-        List<Client> clients= new ArrayList<Client>();
+        List<Client> clients = new ArrayList<Client>();
 
         String selectQuery = "SELECT * FROM " + TABLE_CLIENT_NAME;
 
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-        if (cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
 
             do {
                 Client client = new Client();
@@ -180,16 +172,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 client.setPassword(cursor.getString(4));
                 clients.add(client);
 
-            }while (cursor.moveToNext());
+            } while (cursor.moveToNext());
 
         }
         return clients;
     }
 
-    public boolean clientExist(Client c){
-     SQLiteDatabase db = this.getReadableDatabase();
+    public boolean clientExist(Client c) {
+        SQLiteDatabase db = this.getReadableDatabase();
         String[] args = {c.getNom(), c.getPrenom()};
-        String selectQuery = "SELECT * FROM " + TABLE_CLIENT_NAME + " WHERE " + CLIENT_NOM + " = ? AND " + CLIENT_PRENOM +" = ?" ;
+        String selectQuery = "SELECT * FROM " + TABLE_CLIENT_NAME + " WHERE " + CLIENT_NOM + " = ? AND " + CLIENT_PRENOM + " = ?";
         Cursor cursor = db.rawQuery(selectQuery, args);
 
         if (cursor.moveToFirst())
@@ -198,8 +190,5 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             return false;
 
 
-
-
-
-}
+    }
 }
