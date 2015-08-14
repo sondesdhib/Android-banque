@@ -12,16 +12,16 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import DAO.ClientDAO;
-import DAO.DAOBase;
 import DB.DatabaseHandler;
 import model.Client;
 
 public class MainActivity extends AppCompatActivity implements  View.OnTouchListener, View.OnClickListener {
 
     TextView test;
-    private ClientDAO DAOClient;
+
     private List<Client> clientsList = null;
+
+    DatabaseHandler dbHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,31 +29,17 @@ public class MainActivity extends AppCompatActivity implements  View.OnTouchList
         setContentView(R.layout.activity_main);
         test = (TextView) findViewById(R.id.text);
 
-        DAOClient = new ClientDAO(this);
+       dbHandler = new DatabaseHandler(this);
 
-        //clientDao.open();
-        Client client1 = new Client("florian", "labouysse");
-        Client client2 = new Client("florian", "francky");
+        dbHandler.ajouter(new Client("Xavier","Charles"));
+       dbHandler.ajouter(new Client("Dupont", "Caroline"));
+        dbHandler.ajouter(new Client("eponge", "bob"));
 
-        Log.d("client1log", client1.getLogin());
-        Log.d("client 1 : ", client1.toString());
-        Log.d("client 2 : ", client2.toString());
+      //  dbHandler.close();
 
-        Log.d("Insert", "Inserting ...");
-        //DAOClient.ajouter(client1);
-        //DAOClient.ajouter(client2);
-
-        clientsList = DAOClient.getALLClient();
-
-
-        Log.d("taille", String.valueOf(clientsList.size()));
-
-
-        //Log.d("client", clientDao.selectionner(1).getPrenom());
-
-
-     //  Log.d("Client1", DAOClient.selectionner(1).toString());
-       // test.setText(clientT.getNom());
+       List<Client> clients = dbHandler.getALLClient();
+        Log.d("Taille de la base ", String.valueOf(clients.size()));
+        Log.d("Client 1", clients.get(0).toString());
 
 
     }
@@ -102,5 +88,16 @@ public class MainActivity extends AppCompatActivity implements  View.OnTouchList
     @Override
     public void onClick(View v) {
 
+    }
+
+    @Override
+    protected void onPause() {
+        dbHandler.close();
+        super.onPause();
+    }
+    @Override
+    protected void onResume(){
+        dbHandler.getWritableDatabase();
+        super.onResume();
     }
 }

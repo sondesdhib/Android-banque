@@ -67,13 +67,14 @@ public class Client {
 
     public void setLogin() {
 
-    this.login = nom.substring(0,1) + prenom;
+    this.login = nom.substring(0,1) + prenom.substring(0,1);
 
     }
 
     public void setLogin(String login){
         this.login = login;
     }
+
     @Override
     public String toString() {
         return "Nom : " + getNom() + " Prenom : " + getPrenom() + " Login :" + getLogin();

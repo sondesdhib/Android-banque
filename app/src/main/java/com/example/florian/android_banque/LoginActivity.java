@@ -10,21 +10,23 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import DAO.ClientDAO;
+import DB.DatabaseHandler;
+
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, MenuItem.OnMenuItemClickListener {
 
     private EditText loginIn, passIn;
     private Button logged, canceled;
 
-    private ClientDAO clientDao;
+   private  DatabaseHandler db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        clientDao = new ClientDAO(this);
+        db = new DatabaseHandler(this);
+
 
         loginIn = (EditText) findViewById(R.id.login);
         passIn = (EditText) findViewById(R.id.pass);
@@ -61,27 +63,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
 
-
+//TODO a revoir probléme de connection
         if (v==logged){
-            Log.d("view : " , "logged");
+
             String login = loginIn.getText().toString();
             String pass = passIn.getText().toString();
-            Log.d("login :  ", login);
-            Log.d("login :  ", pass);
-            boolean passOk = clientDao.checkPassword(login, pass);
-            if (!login.isEmpty() || !pass.isEmpty()){
-                if(passOk ){
-                    Log.d("check", "ok");
+
+            Log.d("login   ", login);
+            Log.d("pass  ", pass);
+
+            boolean passOk = db.checkPassword(login, pass);
+
+            if (!login.isEmpty() && !pass.isEmpty() && db.checkPassword(login, pass)){
+
+                    Log.d("pass", "OK");
                     Intent compte = new Intent(LoginActivity.this, Compte.class);
                     startActivity(compte);
-                } else{
-                    loginIn.clearComposingText();
-                    passIn.clearComposingText();
-                }
-            }
-            else {
-                loginIn.clearComposingText();
-                passIn.clearComposingText();
+            }else {
+                loginIn.setText("");
+                passIn.setText("");
             }
 
 
@@ -97,5 +97,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         return false;
+    }
+
+    @Override
+    protected void onPause() {
+        db.close();
+        super.onPause();
+    }
+    @Override
+    protected void onResume(){
+        db.getWritableDatabase();
+        super.onResume();
     }
 }
